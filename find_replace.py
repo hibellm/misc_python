@@ -5,12 +5,14 @@ import csv
 import re
 from colorama import Fore
 
-path='./files'
+path=os.path.join('.','files')
+opath=os.path.join(path,'newfiles')
 origdlm=','
 
 #PATH TO SEARCH
 lfiles=os.listdir(path)
 print(lfiles)
+
 
 #LOOP THROUGH THE FILE LIST
 for lfile in lfiles:
@@ -19,16 +21,17 @@ for lfile in lfiles:
     with open(os.path.join(path, lfile ), 'r') as file :
          filedata = file.read()
 
-         delims = ['@','a','|','^',',','!','¦','§','°','$']
+         dlmlist = ['@','a','|','^',',','!','¦','§','°','$']
+         delims = [i for i in dlmlist if i not in origdlm]
 
          print('\n'+Fore.CYAN+'Checking for file: '+Fore.YELLOW+lfile+Fore.RESET)
-         for delim in delims:
+         for delim in delims :
              x = filedata.count(delim)
              print('Found '+str(delim)+' :'+str(x)+' times')
              if x == 0 :
                  print(Fore.GREEN+'   SUCCESS: Can use this as a delimiter'+Fore.RESET)
                  #DO REPLACE
-                 with open(os.path.join(path, lfile ), 'w') as f :
+                 with open(os.path.join(opath, lfile), 'w') as f :
                      filedata = filedata.replace(origdlm, delim)
                      f.write(filedata)
                      print(Fore.CYAN+'Replaced the delimiter '+Fore.YELLOW+origdlm+Fore.CYAN+' with the new one'+Fore.RESET+'\n')
