@@ -6,32 +6,35 @@ import re
 from colorama import Fore
 
 path='./files'
-origdlm='~|~'
+origdlm=','
 
 #PATH TO SEARCH
 lfiles=os.listdir(path)
 print(lfiles)
 
-#Read in the file
-with open('./files/XX.csv', 'r') as file :
-     filedata = file.read()
+#LOOP THROUGH THE FILE LIST
+for lfile in lfiles:
 
-     delims = ['@','a','|','^',',','!','¦','§','°','$']
+    #READ IN FILE
+    with open(os.path.join(path, lfile ), 'r') as file :
+         filedata = file.read()
 
-     print(Fore.CYAN+'Checking for file:'+Fore.YELLOW+' XX.csv'+Fore.RESET)
-     for delim in delims:
-         x = filedata.count(delim)
-         print('Found '+str(delim)+' :'+str(x)+' times')
-         if x == 0 :
-             print(Fore.GREEN+'   SUCCESS: Can use this as a delimiter'+Fore.RESET)
-             #DO REPLACE
-             with open('./files/XX.csv', 'w') as f :
-                 filedata = filedata.replace(origdlm, delim)
-                 f.write(filedata)
-                 print(Fore.CYAN+'Replaced the delimiter '+Fore.YELLOW+origdlm+Fore.CYAN+' with the new one'+Fore.RESET)
-             break
-         else :
-             print(Fore.RED+'   FAIL: Cannot use this as a delimiter'+Fore.RESET)
+         delims = ['@','a','|','^',',','!','¦','§','°','$']
+
+         print('\n'+Fore.CYAN+'Checking for file: '+Fore.YELLOW+lfile+Fore.RESET)
+         for delim in delims:
+             x = filedata.count(delim)
+             print('Found '+str(delim)+' :'+str(x)+' times')
+             if x == 0 :
+                 print(Fore.GREEN+'   SUCCESS: Can use this as a delimiter'+Fore.RESET)
+                 #DO REPLACE
+                 with open(os.path.join(path, lfile ), 'w') as f :
+                     filedata = filedata.replace(origdlm, delim)
+                     f.write(filedata)
+                     print(Fore.CYAN+'Replaced the delimiter '+Fore.YELLOW+origdlm+Fore.CYAN+' with the new one'+Fore.RESET+'\n')
+                 break
+             else :
+                 print(Fore.RED+'   FAIL: Cannot use this as a delimiter'+Fore.RESET+'\n')
 
 
      #ATTEMPT TO FIND A NEW SEPARATOR
