@@ -43,15 +43,15 @@ es = Elasticsearch([{'host': '192.168.99.100', 'port': 32771}])
 es = Elasticsearch([{'host': '192.168.99.100', 'port': 32771}])
 
 # WORKS
-# r = requests.get('http://192.168.99.100:32771')
-#
-# i = 1
-# while r.status_code == 200:
-#     r = requests.get('http://swapi.co/api/people/'+ str(i))
-#     print(str(r))
-#     es.index(index='sw', doc_type='people', id=i, body=json.loads(r.content))
-#     i=i+1
-#     print(i)
+r = requests.get('http://192.168.99.100:32771')
+
+i = 15
+while r.status_code == 200:
+    r = requests.get('http://swapi.co/api/people/'+ str(i))
+    print(str(r))
+    es.index(index='sw', doc_type='people', id=i, body=json.loads(r.content))
+    i=i+1
+    print(i)
 
 x=es.search(index="sw", body={"query": {"match": {'name':'Darth Vader'}}})
 print(pp_json(x))
