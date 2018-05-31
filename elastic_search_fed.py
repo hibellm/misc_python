@@ -1,60 +1,58 @@
+from flask import Flask, render_template, flash, redirect, url_for, session, request, logging
+from wtforms import Form, StringField, TextAreaField, PasswordField, RadioField, validators
 import requests
 import json
 import os
 import codecs
+import pandas as pd
 from datetime import datetime
 from elasticsearch import Elasticsearch
+from pymongo import MongoClient # Database connector
+from bson.objectid import ObjectId # For ObjectId to work
 
-# res = requests.get('http://192.168.99.100:32771')
-# print(str(res.content))
-
-#PRETTY PRINTING OF JSON
-def pp_json(json_thing, sort=True, indents=4):
-    if type(json_thing) is str:
-        print(json.dumps(json.loads(json_thing), sort_keys=sort, indent=indents))
-    else:
-        print(json.dumps(json_thing, sort_keys=sort, indent=indents))
-    return None
+#APP settings
+app = Flask(__name__)
 
 
+#CONNECT TO MONGODB
+client = MongoClient('localhost', 27017)    #Configure the connection to the database
+db = client.mdh                             #Select the database
+feddata = db.feddata                        #Select the collection
 
-#CONNECT TO ELASTIC SEARCH CLUSTER
-es = Elasticsearch([{'host': '192.168.99.100', 'port': 32771}])
+title = "MDH metadata manager"
+heading = "List Details"
+#modify=ObjectId()
 
-#TO READ IN THE OFFENDING BYTE
-#print(repr(open(os.path.join('..','ref_data','JSON_Output_Federated Study Dataset_2018-04-10.json'), 'rb').read(317648)[317648:]))
+@app.route("/home")
+def home():
+	return render_template('index.html',t=title,h=heading)
 
-#LOAD THE JSON DATA
-with open(os.path.join('..','ref_data','JSON_Output_Federated Study Dataset_2018-04-10.json'),encoding='utf-8') as json_data:
-    doc = json.load(json_data)
+@app.route("/list")
+def lists ():
+    #Display the all Studies
+    feddata_l = feddata.find()
+    a1="active"
+    return render_template('index.html',a1=a1,feddata=feddata_l,t=title,h=heading)
 
-res = es.index(index="fed-index", doc_type='clinical', id=1, body=doc)
-print(res['result'])
-
-res = es.get(index="fed-index", doc_type='clinical', id=1)
-print(res['_source'])
-
-es.indices.refresh(index="fed-index")
-
-res = es.search(index="fed-index", body={"query": {"match_all": {}}})
-print("Got %d Hits:" % res['hits']['total'])
-for hit in res['hits']['hits']:
-    print("%(timestamp)s %(author)s: %(text)s" % hit["_source"])
+@app.route("/search", methods=['GET'])
+def search():
+	#Searching a Task with various references
+	key=request.values.get("key")
+	refer=request.values.get("refer")
+	if(key=="_id"):
+		feddata_l = feddata.find({refer:ObjectId(key)})
+	else:
+		feddata_l = feddata.find({refer:key})
+	return render_template('searchlist.html',feddata=feddata_l,t=title,h=heading)
 
 
-# #CONNECT TO ELASTIC SEARCH CLUSTER
-# es = Elasticsearch([{'host': '192.168.99.100', 'port': 32771}])
-#
-# # WORKS
-# r = requests.get('http://192.168.99.100:32771')
-#
-# i = 15
-# while r.status_code == 200:
-#     r = requests.get('http://swapi.co/api/people/'+ str(i))
-#     print(str(r))
-#     es.index(index='sw', doc_type='people', id=i, body=json.loads(r.content))
-#     i=i+1
-#     print(i)
-#
-# x=es.search(index="sw", body={"query": {"match": {'name':'Darth Vader'}}})
-# print(pp_json(x))
+@app.route("/about")
+def about():
+	return render_template('credits.html',t=title,h=heading)
+
+
+
+
+if __name__ == "__main__":
+    app.secret_key='secret123'
+    app.run('0.0.0.0',5003,debug=True)
