@@ -22,7 +22,7 @@ Below is a list of python modules that are pretty useful
 
 ### Interfacing with other tools
 
-* [Gamil](https://developers.google.com/gmail/api/quickstart/python)
+* [Gmail](https://developers.google.com/gmail/api/quickstart/python)
 * [gsheets](https://developers.google.com/sheets/api/quickstart/python)
 * [pdf](https://pypi.org/project/pdfkit/)
 * [JIRA](https://jira.readthedocs.io/en/latest/)
@@ -30,9 +30,9 @@ Below is a list of python modules that are pretty useful
 
 ### Advanced stuff
 
-* [NLTK](https://pypi.org/project/nltk/)
-* [spacy](https://pypi.org/project/spacy/)
-* [speech recognition](https://pypi.org/project/SpeechRecognition/)
+* [NLTK](https://pypi.org/project/nltk/) Natural Language Toolkit
+* [spacy](https://pypi.org/project/spacy/) A more advanced language processing tool
+* [speech recognition](https://pypi.org/project/SpeechRecognition/) 
 * [pygame](https://pypi.org/project/pygame/)
 
 ### E-Learning Books from O'Reiley
